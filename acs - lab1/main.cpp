@@ -1,6 +1,7 @@
 #include <omp.h> 
 #include <stdio.h> 
 #include <locale.h> 
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +77,27 @@ int main(int argc, char *argv[])
 		printf("Параллельный регион 6. Нить %d из %d\n", ThreadId, NumOfThreads);
 	}
 	printf("==============================\n");
+
+	bool omp_mode = false;
+	if (argc > 1 && !strcmp(argv[1], "parallel" ))
+		omp_mode = true;
+
+	printf("###############################\n");
+	printf("Если задан параметр приложени parallel, то запускаем в параллельном режиме:\n");
+#pragma omp parallel if (omp_mode)
+	{
+		int ThreadId;
+		ThreadId = omp_get_thread_num();
+		NumOfThreads = omp_get_num_threads();
+		if (ThreadId == 0) // main thread
+		{
+			printf("Нить - мастер: Общее количество нитей = %d\n", NumOfThreads);
+		}
+		else
+		{
+			printf("Нить %d из %d\n", ThreadId, NumOfThreads);
+		}
+	}
 
 	printf("Нажмите ENTER для выхода...\n");
 	getchar();
